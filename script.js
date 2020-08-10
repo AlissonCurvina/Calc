@@ -1,99 +1,113 @@
-//Elementos do front que serão manipulados
-let screen = document.getElementById("principal")
-let screenTwo = document.getElementById("res")
-
-//Função para adicionar um listener em cada um dos botões
-function addEventsOnButtons() {
-    const buttons = document.getElementsByClassName("button")
-    
-    for(let i = 0; i < buttons.length; i++) {
-        buttons[i].addEventListener("click",pressedNumber)
-    }
+//Função para adicionar os listeners nos botões
+let buttons = document.getElementsByClassName("button")
+for(let i=0; i<buttons.length;i++) {
+    buttons[i].addEventListener("click",checkButton)
 }
 
-//Data Structure
-let pressedValue // Tecla pressionada
-let factorArr = [] // Array para salvar os fatores
-let operatorArr // Operador que será usado na conta
-let pNumber = "" //Variável para salvar o fator antes de ser parseado e colocado no array 
+function checkButton() {
+    let pressedButton = event.target //Evento que disparou a função
+    let buttonType = event.target.classList[1] //Tipo de botão pressionado (numero ou operador)
+    let buttonContent = event.target.textContent //Conteudo do botão
+    
+    //Salva o díígito pressionado e mostra na tela
+    if (buttonType == 'number') {
+        
+        savePNumber(buttonContent) 
+        drawOne(pNumber)
+    }
 
-function pressedNumber() {
-    pressedValue = event.target.textContent
+    //Confere qual operador foi pressionado e executa as respectivas funções 
+    else if (buttonType == 'operator') {
+        if (buttonContent == '=') {
+            savePNumberOnArr(pNumber)
+            calcValue(factorArr[0],factorArr[1],oper)
+            drawOne('')
+            drawTwo(result)
+        }
+        else if (buttonContent == 'c') {
+            pNumber = ''
+            factorArr = []
+            drawOne('')
+            drawTwo('')
+        }
+        else {
+            addOperator(buttonContent)
+            drawOne('')
+        }
+        
+    }
+    console.log(buttonContent)
+}
 
-    if (screen.textContent.length == 5) {
+let pNumber = ""
+function savePNumber(digit) {
+    let pNumberLength = pNumber.length
+    if (pNumberLength < 5) {
+        pNumber += digit
+    }
+    else {
         return
     }
-
-    if (pressedValue == "c") {
-        cleanData()
-        cleanScreen()
-    }
-
-    else if (pressedValue == "=") {
-        addFactorToArr(pNumber)
-        calcValues(operatorArr[0])
-        cleanScreen()
-        cleanData()
-        addResToScreenTwo(result)
-        addFactorToArr(result)
-        pNumber = result
-    }
-
-    else if (pressedValue == "/" || pressedValue == "*" || pressedValue == "-" || pressedValue == "+") {
-        addOperatorToArr(pressedValue)
-        addFactorToArr(pNumber)
-        pNumber = ""
-        cleanScreen()
-        addNumberToScreenTwo(factorArr[0])
-    }
-
-    else {
-        addNumberOnScreen(pressedValue)
-        pNumber += pressedValue
-    }
 }
 
-function addFactorToArr(factor) {
+
+//função para salvar o operador pressionado
+let oper
+function addOperator(operator) {
     if (factorArr.length > 0) {
-        return 
+        //Executar operação e salvar o resultado como primeiro fator para a próxima operação
+        savePNumberOnArr(pNumber)
+        calcValue(factorArr[0],factorArr[1],oper)
+        oper = operator
+        
     }
     else {
-        factorArr.push(Number(factor))
+        //Salvar o fator no array e o operador na variavel de operador
+        savePNumberOnArr(pNumber)
+        oper = operator
+        drawTwo(factorArr[0])
     }
 }
 
-function addOperatorToArr(operator) {
-    operatorArr = operator
+//array pra salvar os fatores, sempre mantêm no máximo dois fatores no array e executa a conta por Array[0] operador Array[1] e reseta as posiçõões após a conta
+let factorArr = []
+function savePNumberOnArr(factor) {
+    let parsedNumber = Number(factor)
+    factorArr.push(parsedNumber)
+    pNumber = ''
 }
 
-//Process Data
-function calcValues(operator) {
-    if (operator == "+") {
-        result = factorArr[0] + factorArr[1]
+//Executa as operações e salva o resultado como novo fator para a próóxima conta
+let result
+function calcValue(factor1,factor2,operator) {
+    if (operator == '+') {
+        result = factor1 + factor2
     }
+    else if (operator == '-') {
+        result = factor1 - factor2
+    }
+
+    if (operator == '*') {
+        result = factor1 * factor2
+    }
+    else if (operator == '/') {
+        result = factor1 / factor2
+    }
+
+    factorArr = []
+    savePNumberOnArr(result)
+    oper = ''
+    console.log(result)
 }
 
-function cleanData() {
-    pressedValue = ""
-    pNumber = ""
-    factorArr = []  
-    operatorArr = ""
+//Draw 
+let screen = document.getElementById('principal')
+let screenTwo = document.getElementById('res')
+
+function drawOne(value) {
+    screen.textContent = value
 }
 
-//Draw
-function addNumberOnScreen(element) {
-    screen.innerHTML += element
-}
-
-function addNumberToScreenTwo(number) {
-    screenTwo.textContent = number
-}
-
-function addResToScreenTwo(result) {
-    screenTwo.textContent = result
-}
-
-function cleanScreen() {
-    screen.textContent = ""
-    screenTwo.textContent = ""
+function drawTwo(value) {
+    screenTwo.textContent = value
 }
