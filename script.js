@@ -1,113 +1,111 @@
-//Função para adicionar os listeners nos botões
-let buttons = document.getElementsByClassName("button")
-for(let i=0; i<buttons.length;i++) {
-    buttons[i].addEventListener("click",checkButton)
-}
-
-function checkButton() {
-    let pressedButton = event.target //Evento que disparou a função
-    let buttonType = event.target.classList[1] //Tipo de botão pressionado (numero ou operador)
-    let buttonContent = event.target.textContent //Conteudo do botão
-    
-    //Salva o díígito pressionado e mostra na tela
-    if (buttonType == 'number') {
-        
-        savePNumber(buttonContent) 
-        drawOne(pNumber)
-    }
-
-    //Confere qual operador foi pressionado e executa as respectivas funções 
-    else if (buttonType == 'operator') {
-        if (buttonContent == '=') {
-            savePNumberOnArr(pNumber)
-            calcValue(factorArr[0],factorArr[1],oper)
-            drawOne('')
-            drawTwo(result)
-        }
-        else if (buttonContent == 'c') {
-            pNumber = ''
-            factorArr = []
-            drawOne('')
-            drawTwo('')
-        }
-        else {
-            addOperator(buttonContent)
-            drawOne('')
-        }
-        
-    }
-    console.log(buttonContent)
-}
-
-let pNumber = ""
-function savePNumber(digit) {
-    let pNumberLength = pNumber.length
-    if (pNumberLength < 5) {
-        pNumber += digit
-    }
-    else {
-        return
-    }
-}
-
-
-//função para salvar o operador pressionado
-let oper
-function addOperator(operator) {
-    if (factorArr.length > 0) {
-        //Executar operação e salvar o resultado como primeiro fator para a próxima operação
-        savePNumberOnArr(pNumber)
-        calcValue(factorArr[0],factorArr[1],oper)
-        oper = operator
-        
-    }
-    else {
-        //Salvar o fator no array e o operador na variavel de operador
-        savePNumberOnArr(pNumber)
-        oper = operator
-        drawTwo(factorArr[0])
-    }
-}
-
-//array pra salvar os fatores, sempre mantêm no máximo dois fatores no array e executa a conta por Array[0] operador Array[1] e reseta as posiçõões após a conta
-let factorArr = []
-function savePNumberOnArr(factor) {
-    let parsedNumber = Number(factor)
-    factorArr.push(parsedNumber)
-    pNumber = ''
-}
-
-//Executa as operações e salva o resultado como novo fator para a próóxima conta
+let currentFactor = ''
+let previousFactor = ''
+let operand = ''
 let result
-function calcValue(factor1,factor2,operator) {
-    if (operator == '+') {
-        result = factor1 + factor2
-    }
-    else if (operator == '-') {
-        result = factor1 - factor2
-    }
-
-    if (operator == '*') {
-        result = factor1 * factor2
-    }
-    else if (operator == '/') {
-        result = factor1 / factor2
+class Calculator {
+    constructor(currentFactor,previousFactor) {
+        this.currentFactor = currentFactor
+        this.previousFactor = previousFactor
+        this.operand = operand
     }
 
-    factorArr = []
-    savePNumberOnArr(result)
-    oper = ''
-    console.log(result)
+    saveFactors(factor) {
+        currentFactor += factor
+    }
+
+    clear() {
+        screen1.innerText = ''
+        screen2.innerText = ''
+        currentFactor = ''
+        previousFactor = ''
+        operand = ''
+        result = ''
+    }
+
+    del() {
+        currentFactor = currentFactor.slice(0,-1)
+    }
+
+    display() {
+        if( currentFactor == '' ) {
+            screen1.innerText = previousFactor + operand
+            screen2.innerText = ''
+        } else {
+            screen2.innerText = currentFactor
+        }
+        if( currentFactor != '' ) {
+            screen1.innerText = previousFactor + operand
+        }
+    }
+
+    calculate() {
+        currentFactor = Number(currentFactor)
+        previousFactor = Number(previousFactor)
+
+        switch(operand) {
+            case '+':
+                result = currentFactor + previousFactor
+                break
+            case '-':
+                result = previousFactor - currentFactor
+                break
+            case '*':
+                result = previousFactor * currentFactor
+                break
+            case '/':
+                result = previousFactor / currentFactor
+                break
+        }
+        operand = ''
+        previousFactor = result
+        currentFactor = ''
+    }
+
+    getOperator(operator) {
+        operand = operator
+        if( currentFactor === '' ) {
+            return
+        }
+        else if ( previousFactor === '' ) {
+            previousFactor = currentFactor
+            currentFactor = ''
+        }
+    }
 }
 
-//Draw 
-let screen = document.getElementById('principal')
-let screenTwo = document.getElementById('res')
+const calculator = new Calculator(currentFactor,previousFactor,operand)
 
-function drawOne(value) {
-    screen.textContent = value
+const screen1 = document.getElementById('screen1')
+const screen2 = document.getElementById('screen2')
+const operators = document.getElementsByClassName('operator')
+const numbers = document.getElementsByClassName('number')
+const equals = document.getElementById('equals') 
+const allClear = document.getElementById('all-clear')
+const del = document.getElementById('delete')
+
+//Adicionar cliques nos botões 
+for( operator of operators ) {
+    operator.addEventListener('click', function() {
+        calculator.getOperator(event.target.innerText)
+        calculator.display()
+    })
 }
 
-function drawTwo(value) {
-    screenTwo.textContent = value
+for( number of numbers ) {
+    number.addEventListener('click', function() {
+        calculator.saveFactors(event.target.innerText)
+        calculator.display()
+    })
 }
+
+equals.addEventListener('click', () => {
+    calculator.calculate()
+    calculator.display()
+})
+
+allClear.addEventListener('click',calculator.clear)
+
+del.addEventListener('click', () => {
+    calculator.del()
+    calculator.display()
+})

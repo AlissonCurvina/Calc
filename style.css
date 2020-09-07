@@ -2,120 +2,79 @@
     margin: 0;
     padding: 0;
 
-    box-sizing: border-box;
-
     outline: none;
+    box-sizing: border-box;
+}
 
-    color: #fff;
+body {
+    width: 100vw;
+    height: 100vh;
 
-    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(to top, #333, #000)
 }
 
 .content {
-    width: 400px;
-    padding: 20px;
+    padding: 6px;
 
-    margin: 100px auto;
-
-    background: #222;
-    box-shadow: 0 0 5px #000;
+    background: #444;
 }
 
-.visor {
-    width: auto;
-    height: 80px;
-    box-sizing: border-box;
-
-    margin-bottom: 20px;
-    padding-left: 4px;
-    padding-right: 4px;
-
-    border-color: #444;
-    border-width: 2px;
-    border-style: inset;
-
-    color: #000;
-    background: #aaa;
-    box-shadow: inset 0 0 5px#000;
-
-    font-family: 'Orbitron', sans-serif;
+.screen {
+    background: #ccc;
 }
 
-.visor #principal {
-    font-size: 3em;
+.screen1,
+.screen2 {
+    height: 60px;
+    max-width: 100%;
+
+    word-wrap: break-word;
+    word-break: break-all;
+
     text-align: right;
-
-    color: #000;
-
-    border: none;
-
-    height: 50px;
-    line-height: 50px;
 }
 
-.visor #secundario {
-    text-align: right;
-    color: #000;
-
-    font-size: 1.5rem;
-    height: 20px;
-    line-height: 20px;
+.screen1 {
+    font-size: 2rem;
 }
 
-.visor #secundario #res {
-    color: #000;
-} 
-
-.visor #secundario .res {
-    color: #0007;
-    float: left;
+.screen2 {
+    font-size: 3rem;
 }
 
-.keyboard {
-    display: flex;
-
-    font-family: 'Roboto Mono', monospace;
-}
-
-.numbers {
-    width: 240px;
-    height: 240px;
-
+.buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 8px;
+    grid-template-columns: repeat(4, 80px);
+    grid-template-rows: repeat(5, 80px);
+    grid-gap: 6px;
+
+    margin-top: 6px;
 }
 
-.numbers .number,
-.operators .operator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.buttons button {
+    background: #424242;
+    color: #eeeeee;
 
-    border: 1px solid #000;
-
-    cursor: pointer;
-    box-shadow: 0 0 5px#000;
+    border: 1px solid black;
+    box-shadow: 0 0 3px #000;
 }
 
-.zero {
-    grid-column: 1 / span 2;
+.buttons button:active {
+    box-shadow: inset 0 0 10px #000;
 }
 
-.operators {
-    width: 180px;
-    margin-left: 8px;
+.buttons #all-clear {
+    grid-column: 1 / 3;
+}
 
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    grid-gap: 8px;
-} 
+.buttons .plus {
+    grid-row: span 2;
+}
 
-.numbers .number:active,
-.operators .operator:active {
-    box-shadow: inset 0 0 10px#000;
-    background: #111;
-
-    border: none;
-    box-sizing: border-box;
+.buttons .zero {
+    grid-column: span 2;
 }
